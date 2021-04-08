@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from 'react-navigation-tabs'
 import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons'
 import React, {Component} from 'react'
 import {View} from 'react-native'
+import {} from '../components'
 
 class Home extends Component{
   render(){
