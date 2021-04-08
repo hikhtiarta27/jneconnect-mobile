@@ -1,3 +1,4 @@
+import React, {Component} from 'react'
 import {
   View,
 } from 'react-native'
@@ -5,7 +6,10 @@ import {
 export default Container = (props) =>{
   return(
     <View style={{
-      marginHorizontal:10
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+      flex: 1,
+      ...props.style
     }}>
       {props.children}
     </View>
