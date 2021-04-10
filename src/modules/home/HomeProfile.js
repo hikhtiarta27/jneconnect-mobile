@@ -12,15 +12,24 @@ import { _Style, _Font, _Color } from '../../styles'
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
+//redux
+import {
+  userProfileUpdateFetch
+} from '../auth/AuthAction'
+import {
+  USERPROFILEUPDATESUCCESS,
+  USERPROFILEUPDATEFAILED
+} from '../auth/AuthConfig'
+import { connect } from 'react-redux';
+
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
 const userProfileScheme = Yup.object().shape({
   name: Yup.string()
     .required('Required'),
   address: Yup.string()
-    .max(50, 'Too Long!')
-    .required('Required'),
-  email: Yup.string().email('Invalid email').required('Required'),
+    .max(255, 'Too Long!')
+    .required('Required'),  
   contactPerson: Yup.string().matches(phoneRegExp, 'Contact Person is not valid').required('Required')
 });
 
@@ -30,45 +39,101 @@ class HomeProfile extends Component {
     super(props)
     this.state = {
       isModal: false,
-      isModalDivisi: false,      
-      userInfo: {
-        name: 'Hasan Ikhtiarta',
-        email: 'hasan@gmail.com',
-        address: 'Bogor',
-        contactPerson: '08129791631',
-        divisiName: 'IT'
-      },
-      _userInfo: {
-        name: 'Hasan Ikhtiarta',
-        email: 'hasan@gmail.com',
-        address: 'Bogor',
-        contactPerson: '08129791631',
-        divisiName: 'IT'
-      },
-      divisiList: ['IT', 'Finance', 'HR'],
-      _divisi: 0,
+      isModalDivisi: false,            
+      _userInfo: props.res,
+      divisiList: props.divisi || [],
+      _divisi: props.res.divisiId,
+      snackError: null,
+      action: this.props.action,
+      err: this.props.err,
+      res: this.props.res, 
     }
   }
 
-  _renderTextField = (editable = false) => {    
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.action !== prevState.action) {
+      let nextErr = prevState.err;
+      let nextRes = prevState.res;
+
+      if (nextProps.action === USERPROFILEUPDATEFAILED) {
+        nextErr = nextProps.err;
+      }
+      if (nextProps.action === USERPROFILEUPDATESUCCESS) {
+        nextRes = nextProps.res;
+      }
+
+      return {
+        action: nextProps.action,
+        err: nextErr,
+        res: nextRes,
+      };
+    }
+
+    return null;
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.action !== this.state.action) {
+      if (this.state.action === USERPROFILEUPDATEFAILED) {
+        // alert(this.props.err.message)
+        this.setState({snackError: this.props.err.message})
+      }
+
+      if (this.state.action === USERPROFILEUPDATESUCCESS) {                
+        setTimeout(() => {
+          this.setState({snackError: 'User profile updated successfully!'})
+        }, 500);
+      }
+    }
+  }
+
+  componentDidMount(){    
+  }
+
+  _handleForm = (values) =>{        
+    const data = {
+      param:{
+        divisiId: this.state._divisi,
+        email: values.email,
+        name: values.name,
+        contactPerson: values.contactPerson,
+        address: values.address,
+        token: this.props.token
+      },
+      headers: [        
+        {
+          keyHeader: 'Content-Type',
+          valueHeader: 'application/x-www-form-urlencoded',
+        },
+        {
+          keyHeader: 'x-access-token',
+          valueHeader: this.props.token,
+        }
+      ],
+    };
+    this.props.dispatchUserProfileUpdate(data)
+    this.setState({
+      isModal: false
+    })
+  }
+
+  _renderTextField = (editable = false) => {       
     return (
       <>
         <Formik
-          initialValues={editable ? this.state._userInfo : this.state.userInfo}
-          onSubmit={values => console.log(values)}
+          enableReinitialize={true}
+          initialValues={editable ? this.props.res : this.props.res}
+          onSubmit={values => this._handleForm(values)}
           validationSchema={userProfileScheme}
         >
           {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
             <View>
-              <TextField
-                onChangeText={handleChange('email')}
-                onBlur={handleBlur('email')}
+              {!editable && <TextField                
                 keyboardType="email-address"
-                fieldName='Email'
-                editable={editable}
-                defaultValue={values.email}
-                error={errors.email && touched.email ? errors.email : null}
-              />
+                fieldName='Email'          
+                editable={false}      
+                defaultValue={values.email}                
+              />}
               <TextField
                 onChangeText={handleChange('name')}
                 onBlur={handleBlur('name')}
@@ -77,7 +142,8 @@ class HomeProfile extends Component {
                 defaultValue={values.name}
                 error={errors.name && touched.name ? errors.name : null}
               />
-              <TextField
+              <TextField                                
+                maxLength={255}
                 onChangeText={handleChange('address')}
                 onBlur={handleBlur('address')}
                 fieldName='Address'
@@ -91,6 +157,7 @@ class HomeProfile extends Component {
                 keyboardType="phone-pad"
                 fieldName='Contact Person'
                 editable={editable}
+                maxLength={13}
                 defaultValue={values.contactPerson}
                 error={errors.contactPerson && touched.contactPerson ? errors.contactPerson : null}
               />              
@@ -112,7 +179,13 @@ class HomeProfile extends Component {
                 disabled={!editable}
               >
                 <View style={{flexDirection: 'row'}}>
-                  <Text style={{flex: 1, color: editable ? "#000" : "#aaa",}}>{editable ? this.state.divisiList[this.state._divisi] : this.state.userInfo.divisiName}</Text>
+                  {this.state.divisiList.map((v,i)=>{
+                    if(v.id == this.state._divisi){
+                      return (
+                        <Text key={i} style={{flex: 1, color: editable ? "#000" : "#aaa",}}>{editable ? v.name : this.props.res.divisiName  }</Text>
+                      )
+                    }
+                  })}                  
                   <Icon name='caretdown' size={15} color={editable ? "#000" : "#aaa"}/>
                 </View>
               </TouchableOpacity>
@@ -126,15 +199,15 @@ class HomeProfile extends Component {
                 <>
                   {this.state.divisiList.map((v,i)=>{
                     return(
-                      <TouchableOpacity key={i} style={[{borderBottomColor: "#aaa", borderBottomWidth: 1, paddingVertical: 15}, i == 0 ? {
+                      <TouchableOpacity key={i} style={[{borderBottomColor: "#aaa", borderBottomWidth: 1, paddingVertical: 20}, i == 0 ? {
                         borderTopColor: "#aaa", borderTopWidth: 1,
                       } : null]} activeOpacity={0.8} onPress={()=>{
                         this.setState({
-                          _divisi: i,
+                          _divisi: v.id,
                           isModalDivisi: false
                         })
                       }}>
-                        <Text style={[_Style.h4, this.state._divisi == i ? {fontFamily: _Font.PoppinsBold} : {fontFamily: _Font.PoppinsRegular}]}>{v}</Text>
+                        <Text style={[_Style.h4, this.state._divisi == v.id ? {fontFamily: _Font.PoppinsBold} : {fontFamily: _Font.PoppinsRegular}]}>{v.name}</Text>
                       </TouchableOpacity>
                     );
                   })}
@@ -149,9 +222,9 @@ class HomeProfile extends Component {
     );
   }
 
-  render() {
+  render() {    
     return (
-      <Container style={{ backgroundColor: '#fff' }}>
+      <Container style={{ backgroundColor: '#fff' }} snackError={this.state.snackError}>
 
         {this._renderTextField()}
 
@@ -177,4 +250,20 @@ class HomeProfile extends Component {
   }
 }
 
-export default HomeProfile
+
+const mapStateToProps = ({auth, util}) => ({
+  auth: auth,
+  fetch: auth.fetchUserProfile,
+  res: auth.res.profile,
+  err: auth.err,
+  action: auth.action,
+  divisi: util.res.divisi,
+  status: util.res.status,
+  token: auth.res.token
+});
+
+const mapDispatchToProps = dispatch => ({
+  dispatchUserProfileUpdate: value => dispatch(userProfileUpdateFetch(value))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(HomeProfile);

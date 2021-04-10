@@ -6,18 +6,19 @@ import {
 } from 'react-native'
 import { _Style, _Color, _Font } from '../../styles'
 
-export default Button = (props) =>{
-  return(
+export default Button = ({style, buttonName, primary, onPress}) =>{
+  return(    
     <TouchableHighlight 
-      underlayColor="#eee"
-      style={[{                        
+      underlayColor={_Color.Underlay}
+      style={{                        
         paddingHorizontal: 15,
         paddingVertical: 10,
         borderRadius: 8,        
-        backgroundColor: props.primary ? _Color.Yellow : _Color.GreyDark,
-        ...props.style
-      }, _Style.mt10]} {...props}>
-      <Text style={[_Style.h5, {fontFamily: _Font.PoppinsSemiBold, textAlign: 'center'}]}>{props.buttonName}</Text>
+        backgroundColor: primary ? _Color.Yellow : _Color.GreyDark,               
+        marginBottom: 10,
+        ...style,
+      }} onPress={onPress}>
+      <Text style={[_Style.h5, {fontFamily: _Font.PoppinsSemiBold, textAlign: 'center'}]}>{buttonName}</Text>
     </TouchableHighlight>  
   );
 }

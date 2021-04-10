@@ -15,19 +15,19 @@ export default Modal = (props) => {
       {...props}
       animationIn="slideInUp"
       animationOut="slideOutDown"      
-      style={{
+      style={[{
         backgroundColor: _Color.White,
         padding: 20,
         margin: 0
-      }}      
+      }, props.style]}      
     >
       <>
-        <View style={[_Style.mb20, { flexDirection: 'row', alignItems: 'center' }]}>
+        {props.cancelFunc && <View style={[_Style.mb20, { flexDirection: 'row', alignItems: 'center' }]}>
           <TouchableOpacity onPress={props.cancelFunc}>
             <Icon name="close" size={25} />
           </TouchableOpacity>
           <Text style={[{ flex: 1, marginHorizontal: 27, }, _Style.h2]}>{props.headerName}</Text>
-        </View>
+        </View>}
         <ScrollView showsVerticalScrollIndicator={false}>
           {props.children}
         </ScrollView>

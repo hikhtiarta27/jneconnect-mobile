@@ -9,8 +9,9 @@ import { _Style, _Color, _Font } from '../../styles'
 export default TextField = (props) =>{
   return(
     <View style={{flexDirection: 'column'}}>
-      <Text style={[_Style.h5, {marginBottom: 10, fontFamily: _Font.PoppinsSemiBold}]}>{props.fieldName}</Text>
+      {props.fieldName && <Text style={[_Style.h5, {marginBottom: 10, fontFamily: _Font.PoppinsSemiBold}]}>{props.fieldName}</Text>}
       <TextInput style={[{
+        textAlign: 'left',
         paddingVertical: 8,
         paddingHorizontal: 15, 
         borderWidth: 1,

@@ -4,6 +4,16 @@ import { View, Text, StatusBar, TouchableOpacity, TouchableHighlight, ScrollView
 import { Container, Modal } from '../../components'
 import { _Style, _Font, _Color } from '../../styles'
 import { History } from '../../modules'
+import moment from 'moment'
+
+//redux
+import {
+  reportFetch
+} from '../report/ReportAction'
+import {
+  REPORT
+} from '../report/ReportConfig'
+import { connect } from 'react-redux';
 
 class Home extends Component {
 
@@ -11,51 +21,35 @@ class Home extends Component {
     super(props)
     this.state = {
       refreshing: false,
-      listReport: []
+      listReport: [],       
     }
   }
 
-  componentDidMount(){
+  componentDidMount(){    
     this._handleRefresh()
-  }
+  }  
 
-  _handleRefresh = () => {
-    console.log('refresh')
+  _handleRefresh = async() => {
     this.setState({
       refreshing: false,
-    })
-
-    fetch('https://jsonplaceholder.typicode.com/posts')
-    .then((res) => res.json())
-    .then(res=>{
-      var tmp = [
+    })    
+    var ytd = new Date()
+    ytd.setDate(ytd.getDate()-1)
+    const data = {
+      email: this.props.res.profile.email,
+      urlParam: {        
+        date: moment(ytd).format("YYYY-MM-D"),
+      },
+      headers: [        
         {
-          'id': 1,
-          'statusId': 1,
-          'status': 'On Progress',
-          'description': 'Create new API for fund',
-          'date': 'Apr 7, 2021'
-        },
-        {
-          'id': 2,
-          'statusId': 3,
-          'status': 'Canceled',
-          'description': 'Build APK dasko asdka soda sd kaos dkaosd kaosk doaso dao kdosa',
-          'date': 'Apr 7, 2021'
-        },
-        {
-          'id': 3,
-          'statusId': 2,
-          'status': 'Done',
-          'description': 'Create new API for product',
-          'date': 'Apr 7, 2021'
+          keyHeader: 'x-access-token',
+          valueHeader: this.props.auth.res.token
         }
-      ]
-      this.setState({
-        listReport: tmp
-      })
-    }).finally(()=>this.setState({refreshing: false}))
-    
+      ],
+    };
+
+    await this.props.dispatchReportFetch(data)    
+    this.setState({refreshing: false})
     
   }
 
@@ -64,7 +58,8 @@ class Home extends Component {
       <TouchableHighlight key={index}
         underlayColor={_Color.GreyLight}
         onPress={() => this.props.navigation.navigate('HistoryDetail', {
-          data: item
+          data: item,
+          from: 'home'
         })}
         style={[{
           alignItems: 'center',
@@ -107,9 +102,9 @@ class Home extends Component {
   }
 
   render() {
+    const {name} = this.props.res.profile    
     return (
-      <Container style={{ backgroundColor: _Color.Grey, flex: 1 }}>
-        <StatusBar backgroundColor="#fff" barStyle="dark-content" />
+      <Container style={{ backgroundColor: _Color.Grey, flex: 1 }}>        
         <View style={[{
           flexDirection: 'row',
           alignItems: 'center'
@@ -118,7 +113,7 @@ class Home extends Component {
             flex: 1,
             flexDirection: 'column'
           }}>
-            <Text style={[_Font.PoppinsRegular, _Style.h1s]}>Hey <Text style={_Style.h1}>Hasan!</Text></Text>
+            <Text style={[_Font.PoppinsRegular, _Style.h1s]}>Hey <Text style={_Style.h1}>{name.substring(0, name.indexOf(" ") == -1 ? name.length : name.indexOf(" "))}!</Text></Text>
             <Text style={[_Style.h3s]}>Welcome Back</Text>
           </View>
           <TouchableHighlight
@@ -155,17 +150,34 @@ class Home extends Component {
           <View>
             <Text style={[_Style.h2, _Style.mb20]} >Yesterday is <Text style={{ fontStyle: 'italic' }}>History</Text></Text>
             <FlatList 
+              showsVerticalScrollIndicator={false}
               refreshing={this.state.refreshing}
               onRefresh={this._handleRefresh}
-              data={this.state.listReport}
+              data={this.props.reportRes.report}
+              extraData={this.props.reportRes.report}
               renderItem={this._renderItem}
               keyExtractor={(item) => item.id}
             />
           </View>
-        {/* </ScrollView> */}
+        {/* </ScrollView> */}        
       </Container>
     );
   }
 }
 
-export default Home
+const mapStateToProps = ({auth, report}) => ({
+  auth: auth,
+  fetch: auth.fetchUserProfile,
+  res: auth.res,
+  err: auth.err,
+  action: auth.action,     
+  reportRes: report.res,
+  reportErr: report.err,
+  reportAction: report.action
+});
+
+const mapDispatchToProps = dispatch => ({
+  dispatchReportFetch: value => dispatch(reportFetch(value))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

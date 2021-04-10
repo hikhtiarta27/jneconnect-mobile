@@ -1,6 +1,7 @@
-import { createAppContainer } from 'react-navigation'
+import { createAppContainer, createSwitchNavigator} from 'react-navigation'
 import { createBottomTabNavigator } from 'react-navigation-tabs'
 import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons'
+import AntIcon from 'react-native-vector-icons/AntDesign'
 import React, { Component } from 'react'
 import { _Style, _Font, _Color } from '../styles'
 import {
@@ -9,7 +10,12 @@ import {
   Home,
   HomeProfile,
   HomeNotification,
-  HomeProfileEdit
+  HomeProfileEdit,
+  ReportNew,
+  Login,
+  Register,
+  RegisterInfo,
+  LoadingScreen
 } from '../modules'
 import { createStackNavigator } from 'react-navigation-stack';
 
@@ -34,14 +40,6 @@ const homeStack = createStackNavigator({
     path: 'home/notification',
     navigationOptions: ({ navigation }) => ({
       title: 'Notification',
-      gestureDirection: 'horizontal'
-    }),
-  },
-  HomeProfileEdit: {
-    screen: HomeProfileEdit,
-    path: 'home/profile/edit',
-    navigationOptions: ({ navigation }) => ({
-      title: 'Edit Profile',
       gestureDirection: 'horizontal'
     }),
   },
@@ -79,9 +77,36 @@ const historyStack = createStackNavigator({
 }
 )
 
+const authStack = createStackNavigator({
+  Login: {
+    screen: Login,
+    path: 'login',
+    navigationOptions: ({ navigation }) => ({
+      headerShown: false
+    }),
+  },
+  Register: {
+    screen: Register,
+    path: 'register',
+    navigationOptions: ({ navigation }) => ({
+      headerShown: false
+    }),
+  },
+  RegisterInfo: {
+    screen: RegisterInfo,
+    path: 'register/info',
+    navigationOptions: ({ navigation }) => ({
+      headerShown: false
+    }),
+  }
+}, {
+  initialRouteName: 'Login'
+}
+)
 
 const bottomTabNavigator = createBottomTabNavigator({
-  Home: homeStack,
+  Home: homeStack,  
+  ReportNew: ReportNew,  
   History: historyStack,
 },
   {
@@ -90,9 +115,13 @@ const bottomTabNavigator = createBottomTabNavigator({
         const { routeName } = navigation.state
         let iconName;
         if (routeName == 'Home') iconName = 'home'
+        else if (routeName == 'ReportNew') iconName = 'plussquareo'
         else if (routeName == 'History') iconName = 'event'
 
-        return <SimpleIcon name={iconName} size={25} color={tintColor} />
+        if (routeName == 'ReportNew')
+          return <AntIcon name={iconName} size={25} color={tintColor} />
+        else
+          return <SimpleIcon name={iconName} size={25} color={tintColor} />
       }
     }),
     tabBarOptions: {
@@ -103,4 +132,13 @@ const bottomTabNavigator = createBottomTabNavigator({
   }
 )
 
-export default createAppContainer(bottomTabNavigator)
+const switchNavigator = createSwitchNavigator({
+  Loading: LoadingScreen,
+  App: bottomTabNavigator,
+  Auth: authStack
+},{
+  initialRouteName: 'Loading'
+}
+)
+
+export default createAppContainer(switchNavigator)

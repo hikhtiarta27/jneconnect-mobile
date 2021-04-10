@@ -1,0 +1,36 @@
+import Api from '../../config/Api'
+
+export const REPORT = {
+  API: Api.reportList,
+  FETCH: 'REPORT_FETCH',
+  SUCCESS: 'REPORT_SUCCESS',
+  FAILED: 'REPORT_FAILED',
+}
+
+export const REPORT_DETAIL = {
+  API: Api.reportDetail,
+  FETCH: 'REPORT_DETAIL_FETCH',
+  SUCCESS: 'REPORT_DETAIL_SUCCESS',
+  FAILED: 'REPORT_DETAIL_FAILED',
+}
+
+export const REPORT_CREATE = {
+  API: Api.reportCreate,
+  FETCH: 'REPORT_CREATE_FETCH',
+  SUCCESS: 'REPORT_CREATE_SUCCESS',
+  FAILED: 'REPORT_CREATE_FAILED',
+}
+
+export const REPORT_UPDATE = {
+  API: Api.reportUpdate,
+  FETCH: 'REPORT_UPDATE_FETCH',
+  SUCCESS: 'REPORT_UPDATE_SUCCESS',
+  FAILED: 'REPORT_UPDATE_FAILED',
+}
+
+export const REPORT_DELETE = {
+  API: Api.reportDelete,
+  FETCH: 'REPORT_DELETE_FETCH',
+  SUCCESS: 'REPORT_DELETE_SUCCESS',
+  FAILED: 'REPORT_DELETE_FAILED',
+}

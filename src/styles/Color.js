@@ -6,5 +6,7 @@ export default {
   Black: '#000000',
   Yellow: '#FCD70D',
   Green: '#69B91E',
-  Red: '#FC8C78'
+  Red: '#FC8C78',
+  RedLight: '#FF6347',
+  Underlay: '#F5F5F5'
 }
