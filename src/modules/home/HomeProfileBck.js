@@ -3,8 +3,7 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ScrollView,
-  TouchableHighlight
+  ScrollView
 } from 'react-native'
 import Icon from 'react-native-vector-icons/AntDesign'
 import { Container, TextField, Button, Modal } from '../../components'
@@ -12,20 +11,16 @@ import { _Style, _Font, _Color } from '../../styles'
 // import Modal from 'react-native-modal'
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import _S from '../history/_StylesHistory'
 
 //redux
 import {
-  userProfileUpdateFetch,
-  logoutFetch
+  userProfileUpdateFetch
 } from '../auth/AuthAction'
 import {
   USERPROFILEUPDATESUCCESS,
-  USERPROFILEUPDATEFAILED,
-  LOGOUT
+  USERPROFILEUPDATEFAILED
 } from '../auth/AuthConfig'
 import { connect } from 'react-redux';
-import ActionSheet from "react-native-actions-sheet";
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
@@ -53,7 +48,6 @@ class HomeProfile extends Component {
       err: this.props.err,
       res: this.props.res, 
     }
-    this.actionSheetRef = React.createRef()
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -80,22 +74,16 @@ class HomeProfile extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.action !== this.state.action) {
-      if (this.props.action === USERPROFILEUPDATEFAILED) {
+      if (this.state.action === USERPROFILEUPDATEFAILED) {
         // alert(this.props.err.message)
         this.setState({snackError: this.props.err.message})
       }
 
-      if (this.props.action=== USERPROFILEUPDATESUCCESS) {                
+      if (this.state.action === USERPROFILEUPDATESUCCESS) {                
         setTimeout(() => {
           this.setState({snackError: 'User profile updated successfully!'})
         }, 500);
       }
-
-      if(prevProps.auth.action !== this.props.auth.action){
-        if(this.props.auth.action === LOGOUT.SUCCESS) this.props.navigation.navigate('Login')
-        else console.log('Logout Failed')
-      }
-
     }
   }
 
@@ -234,10 +222,6 @@ class HomeProfile extends Component {
     );
   }
 
-  _handleLogout = () =>{
-    this.props.dispatchLogout()
-  }
-
   render() {    
     return (
       <Container style={{ backgroundColor: '#fff' }} snackError={this.state.snackError}>
@@ -248,10 +232,6 @@ class HomeProfile extends Component {
           primary
           buttonName='Edit Profile'
           onPress={() => this.setState({ isModal: true })} />
-
-        <Button          
-          buttonName='Logout'
-          onPress={() => this.actionSheetRef.current?.setModalVisible()} />
 
 
         <Modal
@@ -264,22 +244,7 @@ class HomeProfile extends Component {
             {this._renderTextField(true)}
           </>
         </Modal>
-        <ActionSheet ref={this.actionSheetRef}>
-          <View >
-            <Text style={[_Style.h3, { paddingVertical: 20, textAlign: 'center' }]}>Are you sure?</Text>
-            <TouchableHighlight style={_S.buttonAction} underlayColor={_Color.Underlay} onPress={() => {              
-              this._handleLogout()
-              this.actionSheetRef.current?.setModalVisible();
-            }}>
-              <Text style={[_Style.h5, {fontFamily: _Font.PoppinsSemiBold}]}>Logout</Text>
-            </TouchableHighlight>
-            <TouchableHighlight style={_S.buttonAction} underlayColor={_Color.Underlay} onPress={() => {              
-              this.actionSheetRef.current?.setModalVisible();
-            }}>
-              <Text style={[_Style.h5, { color: _Color.RedLight }]}>Cancel</Text>
-            </TouchableHighlight>
-          </View>
-        </ActionSheet>
+
       </Container>
     );
   }
@@ -298,8 +263,7 @@ const mapStateToProps = ({auth, util}) => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  dispatchUserProfileUpdate: value => dispatch(userProfileUpdateFetch(value)),
-  dispatchLogout: () => dispatch(logoutFetch())
+  dispatchUserProfileUpdate: value => dispatch(userProfileUpdateFetch(value))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomeProfile);

@@ -3,7 +3,7 @@ import {
   baseApi
 } from './Api'
 
-export const apiRequest = (url, method, params, timeout = 25000) => {
+export const apiRequest = (url, method, params, timeout = 30000) => {
   let headers = {
     'Content-Type': 'application/x-www-form-urlencoded',
   }

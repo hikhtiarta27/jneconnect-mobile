@@ -17,7 +17,9 @@ import {
 
   STATUSFETCH,
   STATUSSUCCESS,
-  STATUSFAILED
+  STATUSFAILED,
+
+  LOGOUT
 } from './AuthConfig'
 
 export const signInFetch = value => ({type: SIGNINFETCH, send: value})
@@ -39,3 +41,7 @@ export const divisiFailed = value => ({type: DIVISIFAILED, err: value})
 export const statusFetch = value => ({type: STATUSFETCH, send: value})
 export const statusSuccess = value => ({type: STATUSSUCCESS, res: value})
 export const statusFailed = value => ({type: STATUSFAILED, err: value})
+
+export const logoutFetch = value => ({type: LOGOUT.FETCH, send: value})
+export const logoutSuccess = value => ({type: LOGOUT.SUCCESS, res: value})
+export const logoutFailed = value => ({type: LOGOUT.FAILED, err: value})

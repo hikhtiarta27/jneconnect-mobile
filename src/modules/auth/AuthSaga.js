@@ -1,5 +1,5 @@
 import {
-  call, put, takeLatest, putResolve
+  call, put, takeLatest, putResolve, select
 } from 'redux-saga/effects';
 
 import {
@@ -20,7 +20,9 @@ import {
   DIVISIFETCH,
 
   STATUSAPI,
-  STATUSFETCH
+  STATUSFETCH,
+
+  LOGOUT
 
 } from './AuthConfig'
 
@@ -43,7 +45,11 @@ import {
 
   statusFetch,
   statusSuccess,
-  statusFailed
+  statusFailed,
+
+  logoutSuccess,
+  logoutFetch,
+  logoutFailed
 } from './AuthAction'
 
 function* workerAuth(param){  
@@ -124,10 +130,20 @@ function* workerStatus(param){
   }
 }
 
+function* workerLogout(){
+  try{
+    console.log('Masuk logou saga----')
+    yield putResolve(logoutSuccess());
+  }catch(error){
+    yield putResolve(logoutFetch({ code: '999', message: error }));
+  }
+}
+
 export const watcherAuth = [
   takeLatest(SIGNINFETCH, workerAuth),
   takeLatest(USERPROFILEFETCH, workerUser),
   takeLatest(USERPROFILEUPDATEFETCH, workerUserUpdate),
   takeLatest(DIVISIFETCH, workerDivisi),
   takeLatest(STATUSFETCH, workerStatus),
+  takeLatest(LOGOUT.FETCH, workerLogout),
 ];

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, StatusBar, TouchableOpacity, Alert, ScrollView, RefreshControl, KeyboardAvoidingView } from 'react-native'
+import { View, Text, StatusBar, TouchableOpacity, Alert, ScrollView, RefreshControl, ActivityIndicator } from 'react-native'
 import { Container, TextField, Button, Modal } from '../../../components'
 import { _Style, _Font, _Color } from '../../../styles'
 
@@ -27,36 +27,44 @@ class Register extends Component {
         password: '',
         reTypePassword: '',
       },
+      isLoading: false,
       snackError: null
     }
   }
 
   _checkEmail = async (values) =>{
-    let data = {
-      param: {
-        email: values.email,
-        passowrd: values.password,
-      }, 
-      headers: [        
-        {
-          keyHeader: 'x-access-token',
-          valueHeader: this.props.auth.res.token
-        }
-      ],
-    }
-
-    await apiRequest(Api.checkEmail, 'post', data)
-    .then(res => {              
-      if(res.data.errors!=null){
-        this.setState({snackError: 'Email exist, try another email adress!'})
-      }else{
-        this.props.navigation.navigate('RegisterInfo', {
-          data: values
-        })
+    this.setState({
+      isLoading: true
+    }, async ()=>{
+      let data = {
+        param: {
+          email: values.email,
+          passowrd: values.password,
+        }, 
+        headers: [        
+          {
+            keyHeader: 'x-access-token',
+            valueHeader: this.props.auth.res.token
+          }
+        ],
       }
-    }).catch(err=>{
-      console.log(err)
-    })    
+  
+      await apiRequest(Api.checkEmail, 'post', data)
+      .then(res => {              
+        if(res.data.errors!=null){
+          this.setState({snackError: 'Email exist, try another email adress!'})
+        }else{
+          this.props.navigation.navigate('RegisterInfo', {
+            data: values
+          })        
+        }
+        this.setState({isLoading: false})
+      }).catch(err=>{
+        console.log(err)
+      })  
+    })
+
+      
   }
 
   _handleForm = (values) =>{
@@ -66,6 +74,9 @@ class Register extends Component {
   render() {
     return (
       <Container style={{ backgroundColor: _Color.White, flex: 1, }} snackError={this.state.snackError}>
+        {this.state.isLoading && <View style={{position: "absolute", top: 15, left: 0, right: 0,}}>
+          <ActivityIndicator size="large" color="#000"/>
+        </View> }
         <TouchableOpacity style={{
           marginVertical: 10,
         }} onPress={()=>this.props.navigation.goBack()}>
@@ -84,6 +95,7 @@ class Register extends Component {
                   {Object.keys(this.state._formRegister).map(function (v, i) {
                     return (
                       <TextField key={i}
+                        autoCapitalize={"none"}
                         editable={true}
                         onChangeText={handleChange(v)}
                         onBlur={handleBlur(v)}

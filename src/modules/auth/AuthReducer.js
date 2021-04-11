@@ -17,7 +17,9 @@ import {
 
   STATUSFETCH,
   STATUSSUCCESS,
-  STATUSFAILED
+  STATUSFAILED,
+
+  LOGOUT
 
 } from './AuthConfig'
 
@@ -25,6 +27,7 @@ const initialAuthState = {
   fetchSignIn: false,
   fetchUserProfile: false,
   fetchUserProfileUpdate: false,
+  fetchLogout: false,
   send: null,
   err: null,
   res: null
@@ -119,6 +122,39 @@ export const authReducer = (state = initialAuthState, action) =>{
       return{
         ...state,
         fetchUserProfileUpdate: false,
+        action: action.type,
+        err: {
+          code: action.err.code,
+          message: action.err.message
+        }
+      }
+    }
+    case LOGOUT.FETCH : {
+      return {
+        ...state,
+        fetchLogout: true,
+        send: action.send,
+        action: action.type,
+        err: null,
+      }
+    }
+    case LOGOUT.SUCCESS: {
+      return {
+        ...state,
+        fetchLogout: false,        
+        action: action.type,
+        res: {
+          ...state.res,
+          token: null,
+          auth: false
+        },
+        err: null,
+      }
+    }
+    case LOGOUT.FAILED: {
+      return {
+        ...state,
+        fetchLogout: false,
         action: action.type,
         err: {
           code: action.err.code,

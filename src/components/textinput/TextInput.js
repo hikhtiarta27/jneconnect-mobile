@@ -21,7 +21,7 @@ export default TextField = (props) =>{
         backgroundColor: _Color.White,
         marginBottom: 10,
         ...props.style
-      }, _Style.h5]} {...props} />  
+      }, _Style.h5]} {...props}  />  
       {props.error ? <Text style={[_Style.h5, {color: _Color.Red}, _Style.mb10]}>{props.error}</Text>  : null}
     </View>    
   );

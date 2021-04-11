@@ -1,4 +1,4 @@
-export const baseApi = 'http://localhost:3000'
+export const baseApi = 'http://jneconnect.kopistasi.id'
 
 export default {
   //util

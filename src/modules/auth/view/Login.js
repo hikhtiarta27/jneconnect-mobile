@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text,  TouchableOpacity} from 'react-native'
+import { View, Text,  TouchableOpacity, ActivityIndicator} from 'react-native'
 import { Container, TextField, Button, Modal } from '../../../components'
 import { _Style, _Font, _Color } from '../../../styles'
 import { Formik } from 'formik';
@@ -13,7 +13,9 @@ import {
 } from '../AuthAction';
 import {
   SIGNINSUCCESS,
-  SIGNINFAILED
+  SIGNINFAILED,
+  USERPROFILEUPDATESUCCESS,
+  USERPROFILEUPDATEFAILED
 } from '../AuthConfig'
 import { connect } from 'react-redux';
 
@@ -76,21 +78,26 @@ class Login extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.action !== this.state.action) {
-      if (this.state.action === SIGNINFAILED) {
+      if (this.state.action === SIGNINSUCCESS) {      //profile fetch           
+        this.setState({snackError: 'Login success!'}, ()=>{
+          this.props.navigation.navigate('App');
+        })        
+      }else if (this.state.action === SIGNINFAILED) {
         // alert(this.props.err.message)
         this.setState({snackError: this.props.err.message})
       }
-
-      if (this.state.action === SIGNINSUCCESS) {                
-        this.props.navigation.navigate('App');
-      }
+      
     }
   }
+  
 
   render() {
 
     return (
       <Container style={{backgroundColor: _Color.White}} snackError={this.state.snackError}>
+        {this.props.fetch && <View style={{position: "absolute", top: 15, left: 0, right: 0,}}>
+          <ActivityIndicator size="large" color="#000"/>
+        </View> }
         <View style={[_Style.mt20, _Style.mb20, {flex: 1, justifyContent: 'center'}]}>
           <Text style={[_Font.PoppinsRegular, _Style.h1, {fontSize: 40, lineHeight: 40 + 2}, _Style.mb20]}>Hello There!</Text>
           <Formik            
@@ -101,6 +108,7 @@ class Login extends Component {
           {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
             <View>
               <TextField
+                autoCapitalize={"none"}
                 onChangeText={handleChange('email')}
                 onBlur={handleBlur('email')}
                 keyboardType="email-address"
@@ -110,6 +118,7 @@ class Login extends Component {
                 error={errors.email && touched.email ? errors.email : null}
               />
               <TextField
+                autoCapitalize={"none"}
                 placeholder='Password'
                 editable={true}
                 onChangeText={handleChange('password')}

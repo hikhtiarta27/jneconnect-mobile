@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "116361638072",
-    "project_id": "jneconnect",
-    "storage_bucket": "jneconnect.appspot.com"
+    "project_number": "490236591939",
+    "project_id": "jneconnect2",
+    "storage_bucket": "jneconnect2.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:116361638072:android:d77b382c8118490249044d",
+        "mobilesdk_app_id": "1:490236591939:android:d6bfe5fd6e8013c2b039f6",
         "android_client_info": {
           "package_name": "com.jneconnnect"
         }
       },
       "oauth_client": [
         {
-          "client_id": "116361638072-l5ii082v55vroff3p5vde7jtuv77262l.apps.googleusercontent.com",
+          "client_id": "490236591939-bus47nqc9jfpf641jstg059vncdd4819.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCeTy9GBPJQW4V_0laORdIKgkomCAmOGmE"
+          "current_key": "AIzaSyD9zC0JZLwW32MFFYTRK87sUQpjaxkExpY"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "116361638072-l5ii082v55vroff3p5vde7jtuv77262l.apps.googleusercontent.com",
+              "client_id": "490236591939-bus47nqc9jfpf641jstg059vncdd4819.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

@@ -5,7 +5,7 @@ import { _Style, _Font, _Color } from '../../styles'
 import moment from 'moment';
 import Modal from 'react-native-modal';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
+import {withNavigationFocus} from 'react-navigation'
 //redux
 import {
   reportFetch
@@ -46,6 +46,12 @@ class History extends Component {
     this.setState({ ytd: tmp }, () => {
       console.log('History Start---')
     })
+  }
+
+  componentDidUpdate(prevProps){
+    if (prevProps.isFocused !== this.props.isFocused) {      
+      this._getData()
+    }
   }
 
   _handleDatePicker = (x, y) => {
@@ -361,7 +367,7 @@ class History extends Component {
         </View>
         {this._renderData()}
         {this.state.listReport.length == 0 ? <View style={{ backgroundColor: _Color.White, padding: 10, borderRadius: 10, }}>
-          <Text>No Data</Text>
+          <Text style={_Style.h5}>No Data</Text>
         </View> : null}
         <View style={{ marginBottom: 90 }}></View>
       </Container>
@@ -384,4 +390,4 @@ const mapDispatchToProps = dispatch => ({
   dispatchReportFetch: value => dispatch(reportFetch(value))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(History);
+export default withNavigationFocus(connect(mapStateToProps, mapDispatchToProps)(History));

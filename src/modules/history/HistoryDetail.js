@@ -67,7 +67,10 @@ class HistoryDetail extends Component {
     console.log(this.props.navigation.getParam('from'))
   }
 
-  _handleForm = async (values) => {    
+  _handleForm = async (values) => {   
+    this.setState({
+      snackError: 'Loading...'
+    }) 
     let data = {
       id: this.state.report.id,
       param: {
@@ -112,16 +115,18 @@ class HistoryDetail extends Component {
 
     await apiRequest(Api.reportDetail + '/' + data.email + '/' + data.id, 'get', data)
     .then(res => {        
-      this.setState({ report: res.data.values })      
+      this.setState({ report: res.data.values }, ()=>{
+        this.setState({editModal: false}, ()=>{
+          setTimeout(()=>{
+            this.setState({snackError: 'Report successfully updated'})
+          }, 500) 
+        })    
+      })      
     }).catch(err=>{
       console.log(err)
     })
 
-    this.setState({editModal: false}, ()=>{
-      setTimeout(()=>{
-        this.setState({snackError: 'Report successfully updated'})
-      }, 500) 
-    })    
+    
   }
 
   _handleDelete = async ()=>{
@@ -277,12 +282,12 @@ class HistoryDetail extends Component {
         <Text style={[_Style.h3, _Style.mb10, _Style.mt20]} >Description</Text>
         <Text style={[_Style.h5, { color: "#888" }]}>{this.state.report.description}</Text>
         <ActionSheet ref={this.actionSheetRef}>
-          <View >
+          <View >            
             <TouchableHighlight style={_S.buttonAction} underlayColor={_Color.Underlay} onPress={() => {
               this.setState({ editModal: true })
               this.actionSheetRef.current?.setModalVisible();
             }}>
-              <Text style={_Style.h5}>Edit</Text>
+              <Text style={[_Style.h5, {fontFamily: _Font.PoppinsSemiBold}]}>Edit</Text>
             </TouchableHighlight>
             <TouchableHighlight style={_S.buttonAction} underlayColor={_Color.Underlay} onPress={() => {
               this.deleteSheetRef.current?.setModalVisible();

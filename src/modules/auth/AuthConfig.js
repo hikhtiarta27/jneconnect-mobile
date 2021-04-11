@@ -24,3 +24,9 @@ export const STATUSAPI = Api.status;
 export const STATUSFETCH = 'STATUSFETCH';
 export const STATUSSUCCESS = 'STATUSSUCCESS';
 export const STATUSFAILED = 'STATUSFAILED';
+
+export const LOGOUT = {
+  FETCH: 'LOGOUT_FETCH',
+  SUCCESS: 'LOGOUT_SUCCESS',
+  FAILED: 'LOGOUT_FAILED'
+}

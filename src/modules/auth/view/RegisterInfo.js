@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, StatusBar, TouchableOpacity, TouchableHighlight, ScrollView, RefreshControl, Alert } from 'react-native'
+import { View, Text, StatusBar, TouchableOpacity, TouchableHighlight, ScrollView, ActivityIndicator, Alert } from 'react-native'
 import { Container, TextField, Button, Modal } from '../../../components'
 import { _Style, _Font, _Color } from '../../../styles'
 // import Modal from 'react-native-modal'
@@ -33,11 +33,16 @@ class RegisterInfo extends Component {
       _divisi: 1,
       isModalDivisi: false,   
       formAll: props.navigation.getParam('data'),
-      snackError: null
+      snackError: null,
+      isLoading: false
     }
   }
 
-  _handleForm = async (values) => {    
+  _handleForm = async (values) => {   
+    this.setState({
+      isLoading: false,      
+    }) 
+
     values ={
       ...values,
       ...this.state.formAll,
@@ -57,8 +62,7 @@ class RegisterInfo extends Component {
     };  
     
     await apiRequest(Api.register, 'post', data)
-    .then(res => {              
-      console.log(res)
+    .then(res => {                    
       if(res.data.errors!=null){
         this.setState({snackError: res.data.errors})
       }else{
@@ -66,15 +70,21 @@ class RegisterInfo extends Component {
           this.props.navigation.navigate('Login')
         })
       }
+      this.setState({
+        isLoading: true,      
+      }) 
     }).catch(err=>{
       console.log(err)
-    })    
+    })        
 
   }
 
   render() {
     return (
       <Container style={{ backgroundColor: _Color.White, flex: 1, }} snackError={this.state.snackError}>
+        {this.state.isLoading && <View style={{position: "absolute", top: 15, left: 0, right: 0,}}>
+          <ActivityIndicator size="large" color="#000"/>
+        </View> }
         <TouchableOpacity style={{
           marginVertical: 10,
         }} onPress={() => this.props.navigation.goBack()}>

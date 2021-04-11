@@ -10,7 +10,7 @@ export default _S = StyleSheet.create({
     backgroundColor: _Color.White,
     alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: '#ccc'
+    borderTopColor: '#eaeaea'
   },
   buttonStatus:{
     paddingVertical: 12,

@@ -38,6 +38,7 @@ class LoadingScreen extends Component{
     };    
     this.props.dispatchDivisi(data)
     this.props.dispatchStatus(data) 
+    console.log(this.props.res)
     Animated.timing(this.state.fade, {
       toValue: 1,
       duration: 4000,

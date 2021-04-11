@@ -5,6 +5,7 @@ import { Container, Modal } from '../../components'
 import { _Style, _Font, _Color } from '../../styles'
 import { History } from '../../modules'
 import moment from 'moment'
+import {withNavigationFocus} from 'react-navigation'
 
 //redux
 import {
@@ -27,16 +28,24 @@ class Home extends Component {
 
   componentDidMount(){    
     this._handleRefresh()
+
+  }  
+
+  componentDidUpdate(prevProps){
+    if(prevProps.reportAction !== this.props.reportAction) {
+      // if(this.props.reportAction === REPORT.FAILED) console.log(this.props.reportErr)
+      // else if(this.props.reportAction === REPORT.SUCCESS) console.log(this.props.reportRes)
+    }
+    if (prevProps.isFocused !== this.props.isFocused) {      
+      this._handleRefresh()
+    }
   }  
 
   _handleRefresh = async() => {
-    this.setState({
-      refreshing: false,
-    })    
     var ytd = new Date()
     ytd.setDate(ytd.getDate()-1)
     const data = {
-      email: this.props.res.profile.email,
+      email: this.props.res.email,
       urlParam: {        
         date: moment(ytd).format("YYYY-MM-D"),
       },
@@ -48,9 +57,7 @@ class Home extends Component {
       ],
     };
 
-    await this.props.dispatchReportFetch(data)    
-    this.setState({refreshing: false})
-    
+    await this.props.dispatchReportFetch(data)            
   }
 
   _renderItem = ({ item, index }) => {
@@ -102,7 +109,12 @@ class Home extends Component {
   }
 
   render() {
-    const {name} = this.props.res.profile    
+    let name = ''
+    if(this.props.res.profile!=null){
+      name = this.props.res.profile.name
+    }else{
+      name = this.props.res.name
+    }
     return (
       <Container style={{ backgroundColor: _Color.Grey, flex: 1 }}>        
         <View style={[{
@@ -129,7 +141,7 @@ class Home extends Component {
           >
             <SimpleIcon name='user' size={20} />
           </TouchableHighlight>
-          <TouchableHighlight
+          {/* <TouchableHighlight
             underlayColor={_Color.GreyLight}
             onPress={() => this.props.navigation.navigate('HomeNotification')}
             style={{
@@ -142,7 +154,7 @@ class Home extends Component {
             }}
           >
             <SimpleIcon name='bell' size={20} />
-          </TouchableHighlight>
+          </TouchableHighlight> */}
         </View>
         {/* <ScrollView showsVerticalScrollIndicator={false}
           
@@ -159,6 +171,9 @@ class Home extends Component {
               keyExtractor={(item) => item.id}
             />
           </View>
+          {this.props.reportRes.report.length == 0 && <View style={{backgroundColor: _Color.White, padding: 13, borderRadius: 10,}}>
+            <Text style={_Style.h5}>No Data</Text>
+          </View>}
         {/* </ScrollView> */}        
       </Container>
     );
@@ -173,11 +188,11 @@ const mapStateToProps = ({auth, report}) => ({
   action: auth.action,     
   reportRes: report.res,
   reportErr: report.err,
-  reportAction: report.action
+  reportAction: report.action,  
 });
 
 const mapDispatchToProps = dispatch => ({
   dispatchReportFetch: value => dispatch(reportFetch(value))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default withNavigationFocus(connect(mapStateToProps, mapDispatchToProps)(Home));
